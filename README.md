@@ -16,3 +16,11 @@ Start a local PHP server from the project root:
 ```powershell
 .\php.cmd -S localhost:8000
 ```
+
+Seller registration page:
+
+```text
+http://localhost:8000/Liu%20Ruoqi/register.php
+```
+
+Import `Liu Ruoqi/database.sql` into MySQL before opening the PHP pages.
