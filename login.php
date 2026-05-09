@@ -19,6 +19,11 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// Start session so that other modules (e.g. add-car) can identify the logged-in seller
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Handle preflight OPTIONS request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -83,7 +88,7 @@ $colPass  = FIELD_PASSWORD;
 $colName  = FIELD_NAME;
 
 // 预处理语句防止 SQL 注入
-$sql = "SELECT `$colUser`, `$colPass`, `$colName` FROM `$table` WHERE `$colUser` = ? LIMIT 1";
+$sql = "SELECT `id`, `$colUser`, `$colPass`, `$colName` FROM `$table` WHERE `$colUser` = ? LIMIT 1";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('s', $username);
 $stmt->execute();
@@ -120,8 +125,12 @@ if (!password_verify($password, $user[$colPass])) {
 }
 
 // ============================================================
-// 4. 登录成功，返回用户信息
+// 4. 登录成功，写入 Session 并返回用户信息
 // ============================================================
+$_SESSION['seller_id'] = (int) $user['id'];
+$_SESSION['username']  = $user[$colUser];
+$_SESSION['name']      = $user[$colName] ?? $user[$colUser];
+
 $conn->close();
 
 echo json_encode([

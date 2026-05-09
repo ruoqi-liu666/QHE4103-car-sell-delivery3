@@ -151,13 +151,25 @@ $year = isset($_GET['year']) ? trim($_GET['year']) : '';
             if ($model === '' && $year === '') {
                 echo '<div class="no-results"><p>Enter a model or year above to search for cars.</p></div>';
             } else {
-                // Build query with prepared statement
-                $sql = "SELECT cars.*, sellers.full_name AS seller_name FROM cars JOIN sellers ON cars.seller_id = sellers.seller_id WHERE 1=1";
+                /*
+                 * =============== 联调接口说明 ===============
+                 * 查询 Bi Qinzhi 模块创建的 vehicles 表，
+                 * 并与 Liu Ruoqi / Bi Qinzhi 的 sellers 表联表。
+                 * 联调时如表结构变化，只需调整下方的 SQL 即可。
+                 * =============================================
+                 */
+                $sql = "SELECT vehicles.id, vehicles.make, vehicles.model, vehicles.manufacture_year AS year,
+                               vehicles.price, vehicles.color, vehicles.mileage, vehicles.description,
+                               vehicles.fuel_type, vehicles.transmission, vehicles.location, vehicles.image_path,
+                               vehicles.created_at, sellers.name AS seller_name, sellers.phone AS seller_phone
+                        FROM vehicles
+                        INNER JOIN sellers ON vehicles.seller_id = sellers.id
+                        WHERE 1=1";
                 $params = [];
                 $types = '';
 
                 if ($model !== '') {
-                    $sql .= " AND (cars.model LIKE ? OR cars.make LIKE ?)";
+                    $sql .= " AND (vehicles.model LIKE ? OR vehicles.make LIKE ?)";
                     $searchModel = "%" . $model . "%";
                     $params[] = $searchModel;
                     $params[] = $searchModel;
@@ -165,12 +177,12 @@ $year = isset($_GET['year']) ? trim($_GET['year']) : '';
                 }
 
                 if ($year !== '') {
-                    $sql .= " AND cars.year = ?";
+                    $sql .= " AND vehicles.manufacture_year = ?";
                     $params[] = (int)$year;
                     $types .= 'i';
                 }
 
-                $sql .= " ORDER BY cars.created_at DESC";
+                $sql .= " ORDER BY vehicles.created_at DESC, vehicles.id DESC";
 
                 $stmt = $conn->prepare($sql);
 
@@ -184,12 +196,17 @@ $year = isset($_GET['year']) ? trim($_GET['year']) : '';
                 if ($result->num_rows > 0) {
                     while ($car = $result->fetch_assoc()) {
                         echo '<div class="car-card">';
-                        echo '<h3>' . htmlspecialchars($car['make']) . ' ' . htmlspecialchars($car['model']) . ' (' . htmlspecialchars($car['year']) . ')</h3>';
-                        echo '<p class="price">$' . number_format($car['price'], 2) . '</p>';
+                        if (!empty($car['image_path'])) {
+                            echo '<img src="' . htmlspecialchars($car['image_path']) . '" alt="car" style="max-width:220px;border-radius:6px;margin-bottom:8px;">';
+                        }
+                        echo '<h3>' . htmlspecialchars($car['make']) . ' ' . htmlspecialchars($car['model']) . ' (' . htmlspecialchars((string)$car['year']) . ')</h3>';
+                        echo '<p class="price">RMB ' . number_format((float)$car['price'], 2) . '</p>';
                         echo '<p><strong>Color:</strong> ' . htmlspecialchars($car['color']) . '</p>';
-                        echo '<p><strong>Mileage:</strong> ' . number_format($car['mileage']) . ' km</p>';
+                        echo '<p><strong>Mileage:</strong> ' . number_format((int)$car['mileage']) . ' km</p>';
+                        echo '<p><strong>Fuel / Transmission:</strong> ' . htmlspecialchars($car['fuel_type']) . ' / ' . htmlspecialchars($car['transmission']) . '</p>';
+                        echo '<p><strong>Location:</strong> ' . htmlspecialchars($car['location']) . '</p>';
                         echo '<p><strong>Description:</strong> ' . htmlspecialchars($car['description']) . '</p>';
-                        echo '<p><strong>Seller:</strong> ' . htmlspecialchars($car['seller_name']) . '</p>';
+                        echo '<p><strong>Seller:</strong> ' . htmlspecialchars($car['seller_name']) . ' (' . htmlspecialchars($car['seller_phone']) . ')</p>';
                         echo '</div>';
                     }
                 } else {

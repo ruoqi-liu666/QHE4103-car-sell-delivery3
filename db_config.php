@@ -21,10 +21,10 @@ define('DB_NAME', 'veluxe_motors');    // 组员数据库名称
 define('DB_SOCKET', '/tmp/mysql.sock');// Unix Socket路径（如不需要设为空字符串）
 define('DB_CHARSET', 'utf8mb4');       // 字符集
 
-// 用户表和字段映射（联调时根据组员的表结构修改）
-define('TABLE_USERS', 'Sellers');             // 用户表名
+// 用户表和字段映射（对接 Liu Ruoqi / Bi Qinzhi 注册模块的 sellers 表）
+define('TABLE_USERS', 'sellers');             // 用户表名
 define('FIELD_USERNAME', 'username');         // 用户名字段
-define('FIELD_PASSWORD', 'password');         // 密码字段（需为 password_hash() 哈希值）
+define('FIELD_PASSWORD', 'password_hash');    // 密码字段（password_hash() 哈希值）
 define('FIELD_NAME', 'name');                 // 显示名称字段
 
 // ============================================================

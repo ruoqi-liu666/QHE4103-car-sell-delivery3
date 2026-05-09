@@ -1,7 +1,17 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require __DIR__ . '/includes/app.php';
 
-$sellers = fetch_sellers($pdo);
+// 当前登录用户（从 login.php 写入的 Session 读取）
+$currentSellerId   = isset($_SESSION['seller_id']) ? (int) $_SESSION['seller_id'] : 0;
+$currentSellerName = $_SESSION['name']     ?? '';
+$currentUsername   = $_SESSION['username'] ?? '';
+
+// 仅校验 session 中的 seller 在数据库中确实存在
+$isLoggedIn = $currentSellerId > 0 && seller_exists($pdo, $currentSellerId);
+
 $images = texture_options();
 $vehicles = recent_vehicles($pdo, 3);
 $message = page_message();
@@ -43,11 +53,11 @@ $message = page_message();
         <img src="../Textures/bm m5.png" alt="Vehicle preview" class="hero-image">
       </section>
 
-      <?php if (!$sellers): ?>
+      <?php if (!$isLoggedIn): ?>
         <section class="notice reveal">
-          <strong>No seller records found.</strong>
-          <span>Please register a seller before adding a car.</span>
-          <a class="button button-secondary" href="register.php">Register seller</a>
+          <strong>You are not signed in.</strong>
+          <span>Please sign in as a seller before publishing a vehicle. The listing will be linked to your account automatically.</span>
+          <a class="button button-secondary" href="../login.html">Go to sign in</a>
         </section>
       <?php endif; ?>
 
@@ -63,15 +73,12 @@ $message = page_message();
           <div class="form-grid">
             <label class="field field-wide">
               <span>Seller</span>
-              <select name="seller_id" required>
-                <option value="">Choose registered seller</option>
-                <?php foreach ($sellers as $seller): ?>
-                  <option value="<?= e((string) $seller['id']) ?>">
-                    <?= e($seller['name']) ?> / <?= e($seller['username']) ?> / <?= e($seller['phone']) ?>
-                  </option>
-                <?php endforeach; ?>
-              </select>
-              <small class="error-message"></small>
+              <input type="text"
+                     value="<?= $isLoggedIn ? e($currentSellerName . ' / ' . $currentUsername) : 'Not signed in' ?>"
+                     readonly
+                     style="background:#f5f5f5;cursor:not-allowed;">
+              <input type="hidden" name="seller_id" value="<?= e((string) $currentSellerId) ?>">
+              <small class="error-message">Listing will be saved under the signed-in seller account.</small>
             </label>
 
             <label class="field">
@@ -146,7 +153,7 @@ $message = page_message();
             </label>
           </div>
 
-          <button class="button button-primary" type="submit" <?= !$sellers ? 'disabled' : '' ?>>Save vehicle</button>
+          <button class="button button-primary" type="submit" <?= !$isLoggedIn ? 'disabled' : '' ?>>Save vehicle</button>
           <p class="form-status <?= $message['type'] ? 'is-' . e($message['type']) : '' ?>" id="formStatus" aria-live="polite"><?= e($message['text']) ?></p>
         </form>
 

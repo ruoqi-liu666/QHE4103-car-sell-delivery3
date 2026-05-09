@@ -17,7 +17,7 @@ $message = page_message();
 <body data-page="register">
   <header class="site-header">
     <div class="container nav-shell">
-      <a class="brand" href="../Chen Zhuohui/homepage.html">
+      <a class="brand" href="../homepage.html">
         <span class="brand-mark">V</span>
         <span class="brand-copy">
           <strong>Veluxe Motors</strong>
@@ -25,9 +25,11 @@ $message = page_message();
         </span>
       </a>
       <nav class="site-nav" aria-label="Primary">
-        <a href="../Chen Zhuohui/homepage.html">Home</a>
-        <a href="../Bi Qinzhi/search.html">Search</a>
+        <a href="../homepage.html">Home</a>
+        <a href="../search.html">Search</a>
         <a href="register.php" class="is-active">Register</a>
+        <a href="../login.html">Login</a>
+        <a href="../Bi Qinzhi/add-car.php">Add Car</a>
       </nav>
     </div>
   </header>
@@ -108,9 +110,11 @@ $message = page_message();
     <div class="container footer-shell">
       <p>Veluxe Motors (c) 2026</p>
       <div class="footer-links">
-        <a href="../Chen Zhuohui/homepage.html">Home</a>
-        <a href="../Bi Qinzhi/search.html">Search</a>
+        <a href="../homepage.html">Home</a>
+        <a href="../search.html">Search</a>
         <a href="register.php">Register</a>
+        <a href="../login.html">Login</a>
+        <a href="../Bi Qinzhi/add-car.php">Add Car</a>
       </div>
     </div>
   </footer>

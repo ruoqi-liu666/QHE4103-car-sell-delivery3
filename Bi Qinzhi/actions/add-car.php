@@ -2,13 +2,21 @@
 
 declare(strict_types=1);
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require __DIR__ . '/../includes/app.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect_with('../add-car.php', 'error', 'Invalid request method.');
 }
 
-$sellerId = (int) ($_POST['seller_id'] ?? 0);
+// 以 Session 中的 seller_id 为准，忽略前端提交值，防止伪造
+$sellerId = isset($_SESSION['seller_id']) ? (int) $_SESSION['seller_id'] : 0;
+if ($sellerId <= 0) {
+    redirect_with('../add-car.php', 'error', 'Please sign in before publishing a vehicle.');
+}
 $make = trim($_POST['make'] ?? '');
 $model = trim($_POST['model'] ?? '');
 $year = (int) ($_POST['manufacture_year'] ?? 0);
@@ -22,8 +30,8 @@ $imagePath = trim($_POST['image_path'] ?? '');
 $description = trim($_POST['description'] ?? '');
 $currentYear = (int) date('Y') + 1;
 
-if ($sellerId <= 0 || !seller_exists($pdo, $sellerId)) {
-    redirect_with('../add-car.php', 'error', 'Please choose a registered seller.');
+if (!seller_exists($pdo, $sellerId)) {
+    redirect_with('../add-car.php', 'error', 'Your seller account could not be verified. Please sign in again.');
 }
 
 if (!preg_match('/^[A-Za-z0-9\s-]{2,60}$/', $make)) {
