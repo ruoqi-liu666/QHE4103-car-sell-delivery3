@@ -1,0 +1,39 @@
+CREATE DATABASE IF NOT EXISTS veluxe_motors
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_unicode_ci;
+
+USE veluxe_motors;
+
+CREATE TABLE IF NOT EXISTS sellers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(80) NOT NULL,
+  address VARCHAR(160) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  email VARCHAR(120) NOT NULL UNIQUE,
+  username VARCHAR(60) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS vehicles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  seller_id INT NOT NULL,
+  make VARCHAR(60) NOT NULL,
+  model VARCHAR(80) NOT NULL,
+  manufacture_year SMALLINT UNSIGNED NOT NULL,
+  price DECIMAL(12, 2) NOT NULL,
+  mileage INT UNSIGNED NOT NULL DEFAULT 0,
+  color VARCHAR(40) NOT NULL,
+  fuel_type VARCHAR(40) NOT NULL,
+  transmission VARCHAR(40) NOT NULL,
+  location VARCHAR(120) NOT NULL,
+  image_path VARCHAR(255) DEFAULT NULL,
+  description TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_vehicles_seller_id (seller_id),
+  CONSTRAINT fk_vehicles_seller
+    FOREIGN KEY (seller_id)
+    REFERENCES sellers(id)
+    ON DELETE CASCADE
+);
+
