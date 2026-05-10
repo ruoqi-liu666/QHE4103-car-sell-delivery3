@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require __DIR__ . '/includes/app.php';
 
-// 当前登录用户（从 login.php 写入的 Session 读取）
 $currentSellerId   = isset($_SESSION['seller_id']) ? (int) $_SESSION['seller_id'] : 0;
 $currentSellerName = $_SESSION['name']     ?? '';
 $currentUsername   = $_SESSION['username'] ?? '';

@@ -1,18 +1,4 @@
 <?php
-/**
- * Login Backend Handler - Veluxe Motors Seller Module
- * 
- * 功能：接收前端 POST 提交的用户名和密码，查询数据库验证身份。
- * 返回：JSON 格式的登录结果。
- * 
- * ===================== 联调接口说明 =====================
- * 本文件通过 db_config.php 中的配置连接组员的用户数据库。
- * 联调时只需修改 db_config.php 中的：
- *   - 数据库连接参数（DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME）
- *   - 表名和字段映射（TABLE_USERS, FIELD_USERNAME, FIELD_PASSWORD, FIELD_NAME）
- * 本文件代码无需修改。
- * =====================================================
- */
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
